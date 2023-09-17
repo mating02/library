@@ -37,9 +37,11 @@ function AddBooktoLib(title, author, numPages, read){
 }
 
 const mainDiv = document.querySelector('.main');
+const bookContainer = document.querySelector('.bookContainer');
 
 function DisplayLib(arr){
-    arr.forEach(book => {
+    bookContainer.innerHTML = '';
+    arr.forEach( (book, index) => {
         const newRow = document.createElement('div');
         newRow.classList.add('cardBooks');
         const RowTitle = document.createElement('div');
@@ -48,35 +50,55 @@ function DisplayLib(arr){
         RowAuthor.textContent = book.author;
         const rowPages = document.createElement('div');
         rowPages.textContent = book.numPages.toString();
-        /*
-        const rowRead = document.createElement('input');
-        rowRead.classList.add('form-check-input');
-        rowRead.type = "checkbox";
-        rowRead.role = "switch";
-        rowRead.id = "flexSwitchCheckDefault";
-        */
         const rowReadContainer = document.createElement('div');
         rowReadContainer.classList.add('custom-control', 'custom-switch');
         const rowRead = document.createElement('input');
         rowRead.classList.add('custom-control-input');
         rowRead.type = 'checkbox';
         rowRead.id = 'switch-' + book.title.replace(/\s/g, ''); // Unique ID based on book title
+        rowRead.checked = book.read;
         const rowReadLabel = document.createElement('label');
         rowReadLabel.classList.add('custom-control-label');
         rowReadLabel.setAttribute('for', rowRead.id);
         rowReadContainer.appendChild(rowRead);
         rowReadContainer.appendChild(rowReadLabel);
         const rowDelete = document.createElement('button');
-        rowDelete.classList.add('btn', 'btn-danger');
+        rowDelete.classList.add('buttonDanger');
         rowDelete.textContent = "Delete";
+        rowDelete.setAttribute('data-index', index);
+        rowDelete.addEventListener('click', () => {
+            const index = parseInt(rowDelete.getAttribute('data-index'));
+            if (!isNaN(index) && index >= 0 && index < library.length) {
+                library.splice(index, 1);
+                DisplayLib(library);
+            }
+        });
         newRow.appendChild(RowTitle);
         newRow.appendChild(RowAuthor);
         newRow.appendChild(rowPages);
         newRow.appendChild(rowReadContainer);
         newRow.appendChild(rowDelete);
-        mainDiv.appendChild(newRow);
+        bookContainer.appendChild(newRow);
+
     });
+    mainDiv.appendChild(bookContainer);
 }
 
-AddBooktoLib('Hobbit', 'J.K. Rowling', 500, false);
-DisplayLib(library);
+
+const titleInput = document.getElementById('title');
+const authorInput = document.getElementById('author');
+const numPagesInput = document.getElementById('numPages');
+const bookReadInput = document.getElementById('bookRead');
+
+const form = document.querySelector('form');
+
+form.addEventListener('submit', (event) => {
+    event.preventDefault();
+    const title = titleInput.value;
+    const author = authorInput.value;
+    const numPages = numPagesInput.value;
+    const bookRead = bookReadInput.checked;
+    AddBooktoLib(title, author, numPages, bookRead);
+    DisplayLib(library);
+    modal.style.display = "none";
+});
