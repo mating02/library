@@ -24,16 +24,19 @@ window.addEventListener("click", function (event) {
 
 const library = [];
 
-function Book(title, author, numPages, read){
+class Book {
+
+constructor(title, author, numPages, read){
     this.title = title;
     this.author = author;
     this.numPages = numPages;
     this.read = read;
 }
 
-function AddBooktoLib(title, author, numPages, read){
-    let newBook = new Book(title, author, numPages, read);
-    library.push(newBook);
+AddBooktoLib(){
+    library.push(this);
+}
+
 }
 
 const mainDiv = document.querySelector('.main');
@@ -98,7 +101,7 @@ form.addEventListener('submit', (event) => {
     const author = authorInput.value;
     const numPages = numPagesInput.value;
     const bookRead = bookReadInput.checked;
-    AddBooktoLib(title, author, numPages, bookRead);
+    new Book(title, author, numPages, bookRead).AddBooktoLib();
     DisplayLib(library);
     modal.style.display = "none";
 });
